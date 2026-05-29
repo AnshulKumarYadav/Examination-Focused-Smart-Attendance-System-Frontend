@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../features/authSlice';
-import { QrCode, LogOut, Clock, PlusCircle, History } from 'lucide-react';
+import { LogOut, Clock, PlusCircle, History } from 'lucide-react';
 import api from '../services/api';
 
 const InvigilatorDashboard = () => {
