@@ -33,6 +33,7 @@ const StudentApp = () => {
         if (activeTab === 'history') {
             fetchHistory();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
     const handleMarkAttendance = async (e) => {
