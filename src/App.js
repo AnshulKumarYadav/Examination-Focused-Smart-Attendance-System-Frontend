@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
+import InvigilatorDashboard from './pages/InvigilatorDashboard';
+import StudentApp from './pages/StudentApp';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/login" element={<Login />} />
+
+                {/* Administrator Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN']} />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                </Route>
+
+                {/* Invigilator Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['INVIGILATOR']} />}>
+                    <Route path="/invigilator" element={<InvigilatorDashboard />} />
+                </Route>
+
+                {/* Student Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['STUDENT']} />}>
+                    <Route path="/student" element={<StudentApp />} />
+                </Route>
+
+                <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
