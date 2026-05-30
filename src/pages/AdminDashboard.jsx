@@ -3,13 +3,14 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../features/authSlice';
 import { Users, LogOut, Clock, History, PlusCircle } from 'lucide-react';
 import api from '../services/api';
+import { QRCodeSVG } from 'qrcode.react';
 
 const AdminDashboard = () => {
     const dispatch = useDispatch();
     const [activeTab, setActiveTab] = useState('users'); // 'users', 'active', 'past', 'create'
     const [formData, setFormData] = useState({ type: 'student', name: '', identifier: '', password: '' });
     const [status, setStatus] = useState({ message: '', error: false });
-    
+
     // Session State
     const [activeSessions, setActiveSessions] = useState([]);
     const [pastSessions, setPastSessions] = useState([]);
@@ -32,13 +33,13 @@ const AdminDashboard = () => {
         setStatus({ message: 'Provisioning...', error: false });
         try {
             const endpoint = formData.type === 'student' ? '/admin/users/student' : '/admin/users/invigilator';
-            const payload = formData.type === 'student' 
+            const payload = formData.type === 'student'
                 ? { name: formData.name, enrollmentNo: formData.identifier, password: formData.password }
                 : { name: formData.name, username: formData.identifier, password: formData.password, role: 'INVIGILATOR' };
 
             await api.post(endpoint, payload);
             setStatus({ message: `${formData.type === 'student' ? 'Student' : 'Invigilator'} created successfully!`, error: false });
-            setFormData({ type: 'student', name: '', identifier: '', password: '' }); 
+            setFormData({ type: 'student', name: '', identifier: '', password: '' });
         } catch (error) {
             setStatus({ message: error.response?.data?.error || 'Failed to create user', error: true });
         }
@@ -67,8 +68,11 @@ const AdminDashboard = () => {
             </div>
             {isActive && (
                 <div className="flex gap-4 mt-4 border-t border-slate-100 pt-4">
-                    <div className="flex-1 bg-slate-50 p-4 rounded-xl text-center border border-slate-200">
-                        <p className="text-xs font-mono text-slate-600 break-all">{session.qrCode}</p>
+                    <div className="flex-1 bg-slate-50 p-4 rounded-xl text-center border border-slate-200 flex flex-col items-center justify-center">
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-3">Scan to mark attendance</p>
+                        <div className="bg-white p-2 rounded-lg border border-slate-100">
+                            <QRCodeSVG value={session.qrCode} size={120} />
+                        </div>
                     </div>
                     <div className="bg-slate-800 p-4 rounded-xl text-center flex-1 flex flex-col justify-center">
                         <h4 className="text-3xl font-mono font-bold tracking-[0.2em] text-white">{session.tempCode}</h4>
@@ -129,12 +133,12 @@ const AdminDashboard = () => {
                             )}
                             <form onSubmit={handleProvisionUser} className="space-y-6">
                                 <div className="flex gap-4">
-                                    <label className="flex items-center gap-2"><input type="radio" name="type" checked={formData.type === 'student'} onChange={() => setFormData({...formData, type: 'student'})} /> Student</label>
-                                    <label className="flex items-center gap-2"><input type="radio" name="type" checked={formData.type === 'invigilator'} onChange={() => setFormData({...formData, type: 'invigilator'})} /> Invigilator</label>
+                                    <label className="flex items-center gap-2"><input type="radio" name="type" checked={formData.type === 'student'} onChange={() => setFormData({ ...formData, type: 'student' })} /> Student</label>
+                                    <label className="flex items-center gap-2"><input type="radio" name="type" checked={formData.type === 'invigilator'} onChange={() => setFormData({ ...formData, type: 'invigilator' })} /> Invigilator</label>
                                 </div>
-                                <input type="text" placeholder="Full Name" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
-                                <input type="text" placeholder={formData.type === 'student' ? "Enrollment Number" : "Username"} required value={formData.identifier} onChange={(e) => setFormData({...formData, identifier: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
-                                <input type="password" placeholder="Initial Password" required value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
+                                <input type="text" placeholder="Full Name" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
+                                <input type="text" placeholder={formData.type === 'student' ? "Enrollment Number" : "Username"} required value={formData.identifier} onChange={(e) => setFormData({ ...formData, identifier: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
+                                <input type="password" placeholder="Initial Password" required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
                                 <button type="submit" className="bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-xl font-medium shadow-sm transition-all w-full">Create User</button>
                             </form>
                         </div>
@@ -142,7 +146,7 @@ const AdminDashboard = () => {
 
                     {activeTab === 'active' && activeSessions.map(s => <SessionCard key={s.examSessionId} session={s} isActive={true} />)}
                     {activeTab === 'active' && activeSessions.length === 0 && <p className="text-slate-500">No active sessions.</p>}
-                    
+
                     {activeTab === 'past' && pastSessions.map(s => <SessionCard key={s.examSessionId} session={s} isActive={false} />)}
                     {activeTab === 'past' && pastSessions.length === 0 && <p className="text-slate-500">No past sessions.</p>}
 
@@ -151,16 +155,16 @@ const AdminDashboard = () => {
                             <form onSubmit={handleCreateSession} className="space-y-6">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">Exam Subject / Name</label>
-                                    <input type="text" required placeholder="e.g. Data Structures 101" value={newSession.examName} onChange={(e) => setNewSession({...newSession, examName: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
+                                    <input type="text" required placeholder="e.g. Data Structures 101" value={newSession.examName} onChange={(e) => setNewSession({ ...newSession, examName: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
-                                        <input type="date" required value={newSession.examDate} onChange={(e) => setNewSession({...newSession, examDate: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
+                                        <input type="date" required value={newSession.examDate} onChange={(e) => setNewSession({ ...newSession, examDate: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-2">Time</label>
-                                        <input type="time" required value={newSession.examTime} onChange={(e) => setNewSession({...newSession, examTime: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
+                                        <input type="time" required value={newSession.examTime} onChange={(e) => setNewSession({ ...newSession, examTime: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none" />
                                     </div>
                                 </div>
                                 <button type="submit" className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all">Start Session Now</button>

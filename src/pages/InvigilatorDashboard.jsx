@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../features/authSlice';
 import { LogOut, Clock, PlusCircle, History } from 'lucide-react';
 import api from '../services/api';
+import { QRCodeSVG } from 'qrcode.react';
 
 const InvigilatorDashboard = () => {
     const dispatch = useDispatch();
@@ -57,12 +58,14 @@ const InvigilatorDashboard = () => {
                     {isActive ? 'ACTIVE' : 'EXPIRED'}
                 </span>
             </div>
-            
+
             {isActive && (
                 <div className="flex gap-4 mt-4 border-t border-slate-100 pt-4">
-                    <div className="flex-1 bg-slate-50 p-4 rounded-xl text-center border border-slate-200">
-                        <p className="text-xs font-bold text-slate-400 uppercase mb-1">QR Code Simulation String</p>
-                        <p className="text-xs font-mono text-slate-600 break-all">{session.qrCode}</p>
+                    <div className="flex-1 bg-slate-50 p-4 rounded-xl text-center border border-slate-200 flex flex-col items-center justify-center">
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-3">Scan to mark attendance</p>
+                        <div className="bg-white p-2 rounded-lg border border-slate-100">
+                            <QRCodeSVG value={session.qrCode} size={120} />
+                        </div>
                     </div>
                     <div className="bg-slate-800 p-4 rounded-xl text-center flex-1 flex flex-col justify-center">
                         <p className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-1">Screen Code</p>
@@ -109,13 +112,13 @@ const InvigilatorDashboard = () => {
 
                 <div className="max-w-3xl">
                     {activeTab === 'active' && (
-                        activeSessions.length === 0 ? <p className="text-slate-500">No active sessions currently running.</p> 
-                        : activeSessions.map(s => <SessionCard key={s.examSessionId} session={s} isActive={true} />)
+                        activeSessions.length === 0 ? <p className="text-slate-500">No active sessions currently running.</p>
+                            : activeSessions.map(s => <SessionCard key={s.examSessionId} session={s} isActive={true} />)
                     )}
 
                     {activeTab === 'past' && (
-                        pastSessions.length === 0 ? <p className="text-slate-500">No past sessions found.</p> 
-                        : pastSessions.map(s => <SessionCard key={s.examSessionId} session={s} isActive={false} />)
+                        pastSessions.length === 0 ? <p className="text-slate-500">No past sessions found.</p>
+                            : pastSessions.map(s => <SessionCard key={s.examSessionId} session={s} isActive={false} />)
                     )}
 
                     {activeTab === 'create' && (
@@ -123,16 +126,16 @@ const InvigilatorDashboard = () => {
                             <form onSubmit={handleCreateSession} className="space-y-6">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">Exam Subject / Name</label>
-                                    <input type="text" required placeholder="e.g. Data Structures 101" value={newSession.examName} onChange={(e) => setNewSession({...newSession, examName: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:ring-1 focus:ring-brand-500 outline-none" />
+                                    <input type="text" required placeholder="e.g. Data Structures 101" value={newSession.examName} onChange={(e) => setNewSession({ ...newSession, examName: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:ring-1 focus:ring-brand-500 outline-none" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
-                                        <input type="date" required value={newSession.examDate} onChange={(e) => setNewSession({...newSession, examDate: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:ring-1 focus:ring-brand-500 outline-none" />
+                                        <input type="date" required value={newSession.examDate} onChange={(e) => setNewSession({ ...newSession, examDate: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:ring-1 focus:ring-brand-500 outline-none" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-2">Time</label>
-                                        <input type="time" required value={newSession.examTime} onChange={(e) => setNewSession({...newSession, examTime: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:ring-1 focus:ring-brand-500 outline-none" />
+                                        <input type="time" required value={newSession.examTime} onChange={(e) => setNewSession({ ...newSession, examTime: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 focus:ring-1 focus:ring-brand-500 outline-none" />
                                     </div>
                                 </div>
                                 <button type="submit" disabled={loading} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all">
