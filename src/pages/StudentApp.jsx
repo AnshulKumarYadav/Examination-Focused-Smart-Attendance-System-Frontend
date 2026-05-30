@@ -108,12 +108,19 @@ const StudentApp = () => {
                             {isScanning ? (
                                 <div className="w-full mb-4 rounded-xl overflow-hidden border border-slate-200 relative">
                                     <Scanner
-                                        onResult={(text, result) => {
-                                            setQrCodeData(text); // Capture the scanned string
-                                            setIsScanning(false); // Close the camera automatically
+                                        onScan={(detectedCodes) => {
+                                            if (detectedCodes && detectedCodes.length > 0) {
+                                                const scannedText = detectedCodes[0].rawValue;
+
+                                                setQrCodeData(scannedText); 
+                                                setIsScanning(false);       
+                                            }
                                         }}
                                         onError={(error) => console.error(error?.message)}
-                                        options={{ delayBetweenScanAttempts: 1000 }} // Prevents rapid duplicate scans
+                                        components={{
+                                            audio: false, 
+                                            finder: true  
+                                        }}
                                     />
                                     <button
                                         type="button"
